@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Animated, Text, StyleSheet, View } from "react-native";
+import { Animated, Text, StyleSheet, View, LayoutAnimation } from "react-native";
 import CircleButton from "./circleButton";
 import * as Progress from 'react-native-progress';
 
@@ -7,47 +7,92 @@ import * as Progress from 'react-native-progress';
 function Task( props: any){
     
     const progressOpacity = useRef(new Animated.Value(1)).current
-
-    const isCurrentTask = props.isCurrentTask
+    const scale = useRef(new Animated.Value(1)).current
+    
+    const [shrinkView,setShrinkView] = useState(1)
+    const [isCurrentTask, setIsCurrentTask] = useState(props.isCurrentTask)
+    const [inTransition, setInTranstion] = useState(props.isCurrentTask)
+    
+    
     const bgCol = props.bgCol
 
     const timeMargin = 40
     const [progress, setProgress] = useState(0.1)
 
     useEffect(() => {
-        
-    }, [progress])
+        if(isCurrentTask){
+            setInTranstion(isCurrentTask)
+        }
+    }, [isCurrentTask])
 
 
     function handleProgress(){
         setProgress(current => {
-            if( current < 1.2){
+            if( current < 1){
                 
                 return current + 0.01
             }  else{
-                Animated.timing(progressOpacity, {toValue: 0, useNativeDriver: false}).start(({finished}) => {
-                    hp2();
-                });
+                Stage1();
                 return 0.01
                 
             }
         })
     }
 
-    function hp2(){
-        Animated.timing(progressOpacity, {toValue: 1, useNativeDriver: false}).start()
+    function Stage1(){
+        //Stage 1 will reduce the progress bar in size and remove it as well as the button, then center the new elements
+        //Setting up layout animation for stage 1 when task completes
+         //LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        LayoutAnimation.configureNext(
+            {//duration:2000, create: {type: "spring", property: 'scaleY'},
+                
+                duration: 700,
+                
+                create: { type: 'linear', property: 'opacity' },
+                update: { type: 'spring', springDamping: 0.4 },
+                delete: { type: 'linear', property: 'opacity' }
+                
+            }
+        );
+        const shrinkViewFunc = () => {
+                const interval = setInterval(() => {
+                    setShrinkView(current => {
+                        //if (current-0.1>0){return current-0.1 }else{ return 0}
+                        return current-0.05>0 ? current-0.05 : 0
+                    })
+                }, 20)
+
+                setTimeout(() => { hp3(); setShrinkView(1); clearInterval(interval);}, 3000)
+        }   
+        Animated.timing(scale, {toValue: 0, useNativeDriver: true}).start(({finished}) => {
+            setIsCurrentTask(false)
+            shrinkViewFunc();
+        });
+       
+       
+        
+       
+    }
+
+    function hp3(){
+        setIsCurrentTask(true)
+        
+        
+        //Animated.timing(progressOpacity, {toValue: 1, useNativeDriver: false}).start()
+        Animated.timing(scale, {toValue: 1, useNativeDriver: true}).start()
     }
 
     return( <View
     style={[styles.task, {backgroundColor:bgCol}]}>
         <View style={styles.taskType}>
             <Text style={[styles.taskHeader, isCurrentTask?{marginLeft:30}:{marginLeft:0}]}>Meeting</Text>
-            {isCurrentTask ? 
-            <CircleButton handleProgress={handleProgress} hp2={hp2}/>: <View></View> }
+            {isCurrentTask // inTransition
+            ? 
+            <CircleButton handleProgress={handleProgress} hp3={hp3}/>: <View style={inTransition?{flex:shrinkView}:{flex:0}}/>}
         </View>
 
 
-        {isCurrentTask ? <Animated.View style={[styles.progress, {opacity: progressOpacity}]}>
+        {isCurrentTask ? <Animated.View style={[styles.progress, {opacity: progressOpacity, transform: [{ scale }] }]}>
             <Progress.Bar style={[{alignSelf:'flex-end'}]} progress={progress} width={320} height={20} color="black" />
             {/*<Progress.Pie progress={0.3} size={50} color="black"/>*/}
         </Animated.View>: <></>}

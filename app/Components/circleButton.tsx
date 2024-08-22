@@ -19,7 +19,7 @@ export default function CircleButton(props : any){
         if(longPressTriggered){
             const interval = setInterval(() => {
                 handleProgress();
-            }, 25)
+            }, 10)
 
             return () => clearInterval(interval);
         }
@@ -41,7 +41,7 @@ export default function CircleButton(props : any){
                     backgroundColor: '#fff',
                     borderRadius: 50,
                 }}
-                //onPress={() => props.hp2()}
+                onPress={() => props.hp3()}
                 onLongPress={() => handleLongPress()}
                 onPressOut={()=> releaseLongPress()}
             >
