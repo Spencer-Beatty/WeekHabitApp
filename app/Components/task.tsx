@@ -46,10 +46,10 @@ function Task( props: any){
         LayoutAnimation.configureNext(
             {//duration:2000, create: {type: "spring", property: 'scaleY'},
                 
-                duration: 700,
+                duration: 1000,
                 
                 create: { type: 'linear', property: 'opacity' },
-                update: { type: 'spring', springDamping: 0.4 },
+                update: { type: 'spring', springDamping: 0.9 },
                 delete: { type: 'linear', property: 'opacity' }
                 
             }
@@ -58,9 +58,12 @@ function Task( props: any){
                 const interval = setInterval(() => {
                     setShrinkView(current => {
                         //if (current-0.1>0){return current-0.1 }else{ return 0}
-                        return current-0.05>0 ? current-0.05 : 0
+                        function inc(){
+                            return(0.025)
+                        }
+                        return current-inc()>0 ? current-inc() : 0
                     })
-                }, 20)
+                }, 10)
 
                 setTimeout(() => { hp3(); setShrinkView(1); clearInterval(interval);}, 3000)
         }   
@@ -83,12 +86,18 @@ function Task( props: any){
     }
 
     return( <View
-    style={[styles.task, {backgroundColor:bgCol}]}>
-        <View style={styles.taskType}>
-            <Text style={[styles.taskHeader, isCurrentTask?{marginLeft:30}:{marginLeft:0}]}>Meeting</Text>
+        style={[styles.task, {backgroundColor:bgCol}, inTransition?{height:5, flex:shrinkView}:{height:100}]}>
+        <View style={[styles.taskType]}>
+            <View style={[styles.taskHeaderView,isCurrentTask?{ alignItems: 'flex-end'}: { alignItems: 'center'}]}>
+
+            <Text style={styles.taskHeader}>Meeting</Text>
+            </View>
             {isCurrentTask // inTransition
             ? 
-            <CircleButton handleProgress={handleProgress} hp3={hp3}/>: <View style={inTransition?{flex:shrinkView}:{flex:0}}/>}
+            <Animated.View style={{flex:1, opacity:progressOpacity, transform:  [{ scale }] }}>
+            <CircleButton handleProgress={handleProgress} hp3={hp3}/>
+            </Animated.View>: <View/> //<View style={inTransition?{flex:shrinkView}:{flex:0}}/>
+            }
         </View>
 
 
@@ -140,13 +149,22 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
     },
+    taskHeaderView:{
+        flex: 1,
+        //backgroundColor: 'red',
+        justifyContent:'flex-end'
+        
+    },
     taskHeader:{
         
-        textAlign: 'center',
-        marginTop: 25,
+        //backgroundColor:'yellow',
+        bottom: 10,
+        
+        
+        //marginTop: 25,
         
         fontSize: 42,
-        flex: 1,
+        
     },
     buttonView:{
         backgroundColor: 'white',

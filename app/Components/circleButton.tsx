@@ -4,6 +4,7 @@ import { Icon } from "react-native-elements"
 
 export default function CircleButton(props : any){
     const handleProgress = props.handleProgress;
+    
     const [longPressTriggered, setLongPressTriggered] = useState(false)
 
     function handleLongPress(){
@@ -30,6 +31,7 @@ export default function CircleButton(props : any){
         <View style={styles.buttonView}>
             
             <TouchableOpacity
+                
                 style={{
                     borderWidth: 1,
                     
