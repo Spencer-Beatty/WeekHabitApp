@@ -9,22 +9,39 @@ function Task( props: any){
     const progressOpacity = useRef(new Animated.Value(1)).current
     const scale = useRef(new Animated.Value(1)).current
     
-    const [shrinkView,setShrinkView] = useState(1)
-    const [isCurrentTask, setIsCurrentTask] = useState(props.isCurrentTask)
-    const [inTransition, setInTranstion] = useState(props.isCurrentTask)
-    
-    
     const bgCol = props.bgCol
 
     const timeMargin = 40
     const [progress, setProgress] = useState(0.1)
+    const [shrinkView, setLocalShrinkView] = useState(props.sv)
+    const setShrinkView = props.ssv
+    
+
+    const [isCurrentTask, setIsCurrentTask] = useState(props.index === 0)
+
+    const [inTransition, setInTranstion] = useState(props.isCurrentTask || props.inTransition)
+    
+    
+   useEffect(() => {
+    setLocalShrinkView(props.sv)
+   },[props.sv])
+
+    useEffect(()=>{
+        setIsCurrentTask(props.index === 0)
+    }, [props.index])
+    
+    
 
     useEffect(() => {
         if(isCurrentTask){
+            console.log(props.index)
             setInTranstion(isCurrentTask)
+           
         }
+        console.log(isCurrentTask)
     }, [isCurrentTask])
 
+  
 
     function handleProgress(){
         setProgress(current => {
@@ -56,14 +73,14 @@ function Task( props: any){
         );
         const shrinkViewFunc = () => {
                 const interval = setInterval(() => {
-                    setShrinkView(current => {
+                    setShrinkView((current: number) => {
                         //if (current-0.1>0){return current-0.1 }else{ return 0}
                         function inc(){
-                            return(0.025)
+                            return(  0.025)
                         }
                         return current-inc()>0 ? current-inc() : 0
                     })
-                }, 10)
+                }, 5)
 
                 setTimeout(() => { hp3(); setShrinkView(1); clearInterval(interval);}, 3000)
         }   
@@ -78,11 +95,14 @@ function Task( props: any){
     }
 
     function hp3(){
-        setIsCurrentTask(true)
+
+        //This is where the task should be sent to the graveyard and the next task promoted to current.
+        props.popUpcoming()
+        //setIsCurrentTask(true)
         
         
         //Animated.timing(progressOpacity, {toValue: 1, useNativeDriver: false}).start()
-        Animated.timing(scale, {toValue: 1, useNativeDriver: true}).start()
+        //Animated.timing(scale, {toValue: 1, useNativeDriver: true}).start()
     }
 
     return( <View
@@ -92,7 +112,7 @@ function Task( props: any){
 
             <Text style={styles.taskHeader}>Meeting</Text>
             </View>
-            {isCurrentTask // inTransition
+            { isCurrentTask
             ? 
             <Animated.View style={{flex:1, opacity:progressOpacity, transform:  [{ scale }] }}>
             <CircleButton handleProgress={handleProgress} hp3={hp3}/>

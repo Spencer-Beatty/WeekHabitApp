@@ -17,7 +17,7 @@ function TaskGraveyard(){
 }
 
 export function colourPick(color: number){
-    const colorWheel = ['#32ADE6', '#FF3B30', '#FFCC00', '#00C7BE']
+    const colorWheel = ['#32ADE6', '#FF3B30', '#FFCC00', '#00C7BE', '#e39ade']
     return colorWheel[color]
 }
 

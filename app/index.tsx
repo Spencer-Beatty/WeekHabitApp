@@ -37,7 +37,7 @@ export default function Index() {
       top:insets.top,
       left:insets.left,
       right:insets.right,
-      bottom:0}
+      bottom:-5}
       ]}>
         
     <StatusBar translucent hidden/>
@@ -48,8 +48,8 @@ export default function Index() {
     <Overview></Overview>
     <View style={styles.blackBar}></View>
     <TaskGraveyard></TaskGraveyard>
-    <Task isCurrentTask={true} bgCol={'#FF9500'}></Task>
-    <UpcomingTasks></UpcomingTasks>
+    {//<Task isCurrentTask={true} bgCol={'#FF9500'}></Task>
+    }<UpcomingTasks></UpcomingTasks>
    
    {/*</SafeAreaView>*/}
    </View>
