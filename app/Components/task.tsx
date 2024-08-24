@@ -5,8 +5,13 @@ import * as Progress from 'react-native-progress';
 
 
 function Task( props: any){
+
+    //goofy type changer
+    const fontList = ["Arial", "Helvetica", "Times New Roman", "Courier New", "Verdana", "Georgia", "Trebuchet MS", "Comic Sans MS", "Impact", "Lucida Console", "Palatino Linotype", "Tahoma", "Garamond", "Century Gothic", "Brush Script MT", "Candara", "Calibri", "Segoe UI", "Gill Sans", "Futura"]
+    const [fontIndex, setFontIndex] = useState(0)
     
     const progressOpacity = useRef(new Animated.Value(1)).current
+    const timeOpacity = useRef(new Animated.Value(1)).current
     const scale = useRef(new Animated.Value(1)).current
     
     const bgCol = props.bgCol
@@ -21,24 +26,31 @@ function Task( props: any){
 
     const [inTransition, setInTranstion] = useState(props.isCurrentTask || props.inTransition)
     
+   
     
    useEffect(() => {
     setLocalShrinkView(props.sv)
    },[props.sv])
 
+  
+
     useEffect(()=>{
+        console.log(props.index)
+        setInTranstion(props.index === 3 )
         setIsCurrentTask(props.index === 0)
+        
+        
     }, [props.index])
     
     
 
     useEffect(() => {
         if(isCurrentTask){
-            console.log(props.index)
+            
             setInTranstion(isCurrentTask)
            
         }
-        console.log(isCurrentTask)
+        
     }, [isCurrentTask])
 
   
@@ -72,17 +84,37 @@ function Task( props: any){
             }
         );
         const shrinkViewFunc = () => {
+                let count = 0;
+
                 const interval = setInterval(() => {
+                    count++;
                     setShrinkView((current: number) => {
                         //if (current-0.1>0){return current-0.1 }else{ return 0}
+                        
                         function inc(){
-                            return(  0.025)
+                            
+                            if(count < 30){
+                                return( -1 * 0.025 * (count /(count + count)))
+                            }
+                            return(  0.025 * (count + count)/count)
                         }
                         return current-inc()>0 ? current-inc() : 0
                     })
-                }, 5)
+                }, 15)
+                Animated.timing(timeOpacity, {toValue: 0, duration:1000, useNativeDriver:true}).start()
+                //remove code
+                /*const fontInterval = setInterval(() => {
+                    setFontIndex((current: number) => {
+                        //if (current-0.1>0){return current-0.1 }else{ return 0}
+                        if(current + 1 < fontList.length){
+                            return current + 1
+                        }else{
+                            return 0
+                        }
+                    })
+                }, 50)*/
 
-                setTimeout(() => { hp3(); setShrinkView(1); clearInterval(interval);}, 3000)
+                setTimeout(() => { hp3(); setShrinkView(1);  clearInterval(interval); /*clearInterval(fontInterval);*/}, 3000)
         }   
         Animated.timing(scale, {toValue: 0, useNativeDriver: true}).start(({finished}) => {
             setIsCurrentTask(false)
@@ -110,7 +142,7 @@ function Task( props: any){
         <View style={[styles.taskType]}>
             <View style={[styles.taskHeaderView,isCurrentTask?{ alignItems: 'flex-end'}: { alignItems: 'center'}]}>
 
-            <Text style={styles.taskHeader}>Meeting</Text>
+            <Text style={[styles.taskHeader, fontIndex!==0?{fontFamily:fontList[fontIndex]}:{fontFamily:'arial'}]}>Meeting</Text>
             </View>
             { isCurrentTask
             ? 
@@ -127,7 +159,7 @@ function Task( props: any){
         </Animated.View>: <></>}
 
 
-        <View style={styles.timeLine}>
+        <Animated.View style={[styles.timeLine, {opacity:timeOpacity}]} >
             <View style={[styles.timeElement,  { marginLeft: timeMargin}]}>
                 <Text style={[styles.timeNumber,{textAlign: "left"}]}>
                     3:00 PM
@@ -150,7 +182,7 @@ function Task( props: any){
                     End
                 </Text>
             </View>
-        </View>
+        </Animated.View>
     </View>);
 }
 

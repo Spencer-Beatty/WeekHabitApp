@@ -48,10 +48,10 @@ function UpcomingTasks(){
                 return<Task key = {task} index={upcomingTasks.indexOf(task)} bgCol={colourPick(task)} sv = {shrinkView} ssv = {setShrinkView} popUpcoming={popUpcoming}></Task>
             }
             else if(upcomingTasks.indexOf(task) > 0 && upcomingTasks.indexOf(task) < 3 ){
-            return(<Task key={task} isCurrentTask={false} bgCol={colourPick(task)} sv = {shrinkView} ssv = {setShrinkView}></Task>)
+            return(<Task key={task} index ={upcomingTasks.indexOf(task)} bgCol={colourPick(task)}  sv = {shrinkView} ssv = {setShrinkView}></Task>)
             }
             else if(upcomingTasks.indexOf(task) == 3){
-                return(<Task key={task} isCurrentTask={false} inTransition={true} bgCol={colourPick(task)} sv = {1-shrinkView} ssv = {setShrinkView}></Task>)
+                return(<Task key={task} index ={upcomingTasks.indexOf(task)} bgCol={colourPick(task)} sv = {1-shrinkView} ssv = {setShrinkView}></Task>)
             }
         })}
         </View>: <></>}
