@@ -62,7 +62,7 @@ export default function CircleButton(props : any){
             marginTop: 20,
             flex: 1,
             flexDirection: 'row',
-            justifyContent: 'center',
+            justifyContent: 'flex-end',
             alignItems: 'center'
         },
         buttonStyle: {

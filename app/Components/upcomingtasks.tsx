@@ -3,26 +3,42 @@ import { Text, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Task from "./task";
 import { colourPick } from "./taskgraveyard";
+import taskData from "./taskData.js"
 
 
 
 function UpcomingTasks(){
 
     const insets = useSafeAreaInsets();
-    const [upcomingTasks, setUpcomingTasks] = useState([1,2,3,4,5,6,7,8])
+    const [upcomingTasks, setUpcomingTasks] = useState(taskData["data"]["tasks"].map((task,index) => ({
+        ...task,
+        "key" : index +1
+         
+
+       // Adding new property 'key'
+       })))
+
     const [shrinkView, setShrinkView] = useState(1)
     const [currentIndex, setCurrentIndex] = useState(0)
 
-
     useEffect(() => {
-        console.log(upcomingTasks)
-        
-        console.log(upcomingTasks[0])
-    },[upcomingTasks])
+        let count = 0
+        const updatedTasks = upcomingTasks.map((task,index) => ({
+           ...task,
+           "key" : index +1
+            
+
+      // Adding new property 'key'
+          }));
+        setUpcomingTasks(updatedTasks)
+    },[])
+
+    
+
 
     function popUpcoming(){
         setUpcomingTasks(current => {
-            return current.slice(1)
+            return current.slice(1).concat(current[0])
         })
         
     }
@@ -43,15 +59,15 @@ function UpcomingTasks(){
        */}
         {upcomingTasks.length > 1 ?
         <View style={{flex:1}}>
-        {upcomingTasks.map(task => {
+        {upcomingTasks.map((task,index) => {
             if(upcomingTasks.indexOf(task) == 0) {
-                return<Task key = {task} index={upcomingTasks.indexOf(task)} bgCol={colourPick(task)} sv = {shrinkView} ssv = {setShrinkView} popUpcoming={popUpcoming}></Task>
+                return<Task key = {task["key"]} title={task["title"]} duration={task["duration"]} index={upcomingTasks.indexOf(task)} bgCol={colourPick(task["key"])} sv = {shrinkView} ssv = {setShrinkView} popUpcoming={popUpcoming}></Task>
             }
             else if(upcomingTasks.indexOf(task) > 0 && upcomingTasks.indexOf(task) < 3 ){
-            return(<Task key={task} index ={upcomingTasks.indexOf(task)} bgCol={colourPick(task)}  sv = {shrinkView} ssv = {setShrinkView}></Task>)
+            return(<Task key={task["key"]} title={task["title"]} duration={task["duration"]} index ={upcomingTasks.indexOf(task)} bgCol={colourPick(task["key"])}  sv = {shrinkView} ssv = {setShrinkView}></Task>)
             }
             else if(upcomingTasks.indexOf(task) == 3){
-                return(<Task key={task} index ={upcomingTasks.indexOf(task)} bgCol={colourPick(task)} sv = {1-shrinkView} ssv = {setShrinkView}></Task>)
+                return(<Task key={task["key"]} title={task["title"]} duration={task["duration"]} index ={upcomingTasks.indexOf(task)} bgCol={colourPick(task["key"])} sv = {1-shrinkView} ssv = {setShrinkView}></Task>)
             }
         })}
         </View>: <></>}

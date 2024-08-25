@@ -16,9 +16,15 @@ function TaskGraveyard(){
     </View>);
 }
 
-export function colourPick(color: number){
+export function colourPick(color: any){
     const colorWheel = ['#32ADE6', '#FF3B30', '#FFCC00', '#00C7BE', '#e39ade']
-    return colorWheel[color]
+
+    if(typeof(color) === "number"){
+        return colorWheel[color]
+    }else{
+        return colorWheel[color["duration"] % 5]
+    }
+    
 }
 
 

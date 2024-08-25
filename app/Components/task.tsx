@@ -6,13 +6,16 @@ import * as Progress from 'react-native-progress';
 
 function Task( props: any){
 
+    const title = props.title
+    const duration = props.duration
+
     //goofy type changer
     const fontList = ["Arial", "Helvetica", "Times New Roman", "Courier New", "Verdana", "Georgia", "Trebuchet MS", "Comic Sans MS", "Impact", "Lucida Console", "Palatino Linotype", "Tahoma", "Garamond", "Century Gothic", "Brush Script MT", "Candara", "Calibri", "Segoe UI", "Gill Sans", "Futura"]
     const [fontIndex, setFontIndex] = useState(0)
     
-    const progressOpacity = useRef(new Animated.Value(1)).current
+    const progressOpacity = useRef(new Animated.Value(0)).current
     const timeOpacity = useRef(new Animated.Value(1)).current
-    const scale = useRef(new Animated.Value(1)).current
+    const scale = useRef(new Animated.Value(0)).current
     
     const bgCol = props.bgCol
 
@@ -38,7 +41,21 @@ function Task( props: any){
         console.log(props.index)
         setInTranstion(props.index === 3 )
         setIsCurrentTask(props.index === 0)
-        
+        if(props.index === 0){
+            LayoutAnimation.configureNext(
+                {//duration:2000, create: {type: "spring", property: 'scaleY'},
+                    
+                    duration: 1000,
+                    
+                    create: { type: 'linear', property: 'opacity' },
+                    update: { type: 'spring', springDamping: 0.9 },
+                    delete: { type: 'linear', property: 'opacity' }
+                    
+                }
+            );
+            Animated.timing(scale, {toValue: 1, duration:1000, useNativeDriver:true}).start()
+            Animated.timing(progressOpacity, {toValue: 1, duration:1000, useNativeDriver:true}).start()
+        }
         
     }, [props.index])
     
@@ -53,7 +70,15 @@ function Task( props: any){
         
     }, [isCurrentTask])
 
-  
+    function getFontSize(size: 'small' | 'medium' | 'large'): number {
+        const sizes: { [key: string]: number } = {
+          small: 12,
+          medium: 16,
+          large: 25
+        };
+        
+        return sizes[size] || sizes.medium;
+    }
 
     function handleProgress(){
         setProgress(current => {
@@ -66,6 +91,14 @@ function Task( props: any){
                 
             }
         })
+    }
+
+    function fillButtonOnPress(){
+        const interval = setInterval(() =>{
+            handleProgress()
+        }, 10)
+
+       setTimeout(() => {clearInterval(interval)},2000)
     }
 
     function Stage1(){
@@ -140,15 +173,15 @@ function Task( props: any){
     return( <View
         style={[styles.task, {backgroundColor:bgCol}, inTransition?{height:5, flex:shrinkView}:{height:100}]}>
         <View style={[styles.taskType]}>
-            <View style={[styles.taskHeaderView,isCurrentTask?{ alignItems: 'flex-end'}: { alignItems: 'center'}]}>
-
-            <Text style={[styles.taskHeader, fontIndex!==0?{fontFamily:fontList[fontIndex]}:{fontFamily:'arial'}]}>Meeting</Text>
-            </View>
+            {//<View style={[styles.taskHeaderView,isCurrentTask?{ alignItems: 'flex-end'}: { alignItems: 'center'}]}>
+}
+            <Animated.Text style={[styles.taskHeader, {fontSize: getFontSize("large")},{opacity:timeOpacity},fontIndex!==0?{fontFamily:fontList[fontIndex]}:{fontFamily:'arial'}]}>{title}</Animated.Text>
+            
             { isCurrentTask
             ? 
-            <Animated.View style={{flex:1, opacity:progressOpacity, transform:  [{ scale }] }}>
-            <CircleButton handleProgress={handleProgress} hp3={hp3}/>
-            </Animated.View>: <View/> //<View style={inTransition?{flex:shrinkView}:{flex:0}}/>
+            <Animated.View style={{flex:0.5, justifyContent:'flex-end', opacity:progressOpacity, transform:  [{ scale }] }}>
+            <CircleButton handleProgress={handleProgress} hp3={fillButtonOnPress}/>
+            </Animated.View>: <View style={{flex:0.5}}/> //<View style={inTransition?{flex:shrinkView}:{flex:0}}/>
             }
         </View>
 
@@ -161,24 +194,24 @@ function Task( props: any){
 
         <Animated.View style={[styles.timeLine, {opacity:timeOpacity}]} >
             <View style={[styles.timeElement,  { marginLeft: timeMargin}]}>
-                <Text style={[styles.timeNumber,{textAlign: "left"}]}>
+                <Text style={[styles.timeNumber,{textAlign: "left", fontSize: getFontSize("small")}]}>
                     3:00 PM
                 </Text>
-                <Text style={styles.timeDesignate}>
+                <Text style={[styles.timeDesignate, {fontSize: getFontSize("small")}]}>
                     Start
                 </Text>
             </View>
             <View>
-                <Text style={styles.timeDuration}>
-                    {"(30 MINS)"}
+                <Text style={[styles.timeDuration,, {fontSize: getFontSize("small")}]}>
+                    {"("}{duration}{" MINS)"}
                 </Text>
             </View>
             <View style={[styles.timeElement,  { marginRight: timeMargin, alignItems: 'flex-end'}]}>
-                <Text style={styles.timeNumber}>
+                <Text style={[styles.timeNumber, {fontSize: getFontSize("small")}]}>
                     3:30 PM
                 </Text>
                 
-                <Text style={styles.timeDesignate}>
+                <Text style={[styles.timeDesignate,{fontSize: getFontSize("small")}]}>
                     End
                 </Text>
             </View>
@@ -195,27 +228,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 8,
         flex: 0.8,
+        
     },
     taskType: {
-       
+        
         flex: 1,
         flexDirection: 'row',
     },
     taskHeaderView:{
+    
+    
         flex: 1,
         //backgroundColor: 'red',
         justifyContent:'flex-end'
         
     },
     taskHeader:{
-        
-        //backgroundColor:'yellow',
+        flex:1,
+        //backgroundColor:'purple',
         bottom: 10,
+        alignSelf: 'center',
+
         
+        paddingLeft: 25
+        //alignSelf:'flex-start',
         
         //marginTop: 25,
         
-        fontSize: 42,
+        //fontSize: 42,
         
     },
     buttonView:{
@@ -225,7 +265,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
         marginRight: 0,    
-        flex: 1
+        flex: 0.5
     },
     buttonStyle: {
         backgroundColor: 'red'
