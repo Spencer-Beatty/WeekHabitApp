@@ -4,13 +4,17 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 
 
 function Overview(){
+    const date = new Date();
+
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
 
     return( <View
     style={styles.overview}
     >
         
 
-        <Text style={[styles.date]}>{"08.\n15th"}</Text>
+        <Text style={[styles.date]}>{month}{".\n"}{day}{"th"}</Text>
     
         <Text style={styles.quote}>
             {'"A day spent is  \na day not wasted"'}

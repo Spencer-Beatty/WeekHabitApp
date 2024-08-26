@@ -16,6 +16,7 @@ export default function Index() {
 
   const insets = useSafeAreaInsets();
   const [bgCol, setBgCol] = useState("green")
+  const [deadTasks, setDeadTasks] = useState([])
 
   useEffect(() => { 
     setBgCol('blue')
@@ -26,7 +27,17 @@ export default function Index() {
 
     
   
+  
+    
+    function addToGraveyard(number: any){
 
+        
+          setDeadTasks(current=>{
+            return current.concat(number)
+    })
+        
+       
+    }
 
   
   return (
@@ -47,9 +58,9 @@ export default function Index() {
     
     <Overview></Overview>
     <View style={styles.blackBar}></View>
-    <TaskGraveyard></TaskGraveyard>
+    <TaskGraveyard deadTasks={deadTasks}></TaskGraveyard>
     {//<Task isCurrentTask={true} bgCol={'#FF9500'}></Task>
-    }<UpcomingTasks></UpcomingTasks>
+    }<UpcomingTasks addToGraveyard={addToGraveyard}></UpcomingTasks>
    
    {/*</SafeAreaView>*/}
    </View>

@@ -30,6 +30,8 @@ function Task( props: any){
     const [inTransition, setInTranstion] = useState(props.isCurrentTask || props.inTransition)
     
    
+
+    
     
    useEffect(() => {
     setLocalShrinkView(props.sv)
@@ -55,6 +57,8 @@ function Task( props: any){
             );
             Animated.timing(scale, {toValue: 1, duration:1000, useNativeDriver:true}).start()
             Animated.timing(progressOpacity, {toValue: 1, duration:1000, useNativeDriver:true}).start()
+
+           
         }
         
     }, [props.index])
@@ -163,6 +167,8 @@ function Task( props: any){
 
         //This is where the task should be sent to the graveyard and the next task promoted to current.
         props.popUpcoming()
+        props.addToGraveyard(props.bgCol)
+        
         //setIsCurrentTask(true)
         
         
@@ -194,9 +200,9 @@ function Task( props: any){
 
         <Animated.View style={[styles.timeLine, {opacity:timeOpacity}]} >
             <View style={[styles.timeElement,  { marginLeft: timeMargin}]}>
-                <Text style={[styles.timeNumber,{textAlign: "left", fontSize: getFontSize("small")}]}>
+                {/*<Text style={[styles.timeNumber,{textAlign: "left", fontSize: getFontSize("small")}]}>
                     3:00 PM
-                </Text>
+        </Text>*/}
                 <Text style={[styles.timeDesignate, {fontSize: getFontSize("small")}]}>
                     Start
                 </Text>
@@ -207,9 +213,9 @@ function Task( props: any){
                 </Text>
             </View>
             <View style={[styles.timeElement,  { marginRight: timeMargin, alignItems: 'flex-end'}]}>
-                <Text style={[styles.timeNumber, {fontSize: getFontSize("small")}]}>
+                {/*<Text style={[styles.timeNumber, {fontSize: getFontSize("small")}]}>
                     3:30 PM
-                </Text>
+    </Text>*/}
                 
                 <Text style={[styles.timeDesignate,{fontSize: getFontSize("small")}]}>
                     End
